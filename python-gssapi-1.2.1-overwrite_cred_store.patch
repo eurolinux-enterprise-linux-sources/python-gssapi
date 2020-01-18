@@ -1,0 +1,47 @@
+From fddcbec3d7b5ad50ffd2e66c7203dc200d26a594 Mon Sep 17 00:00:00 2001
+From: Robbie Harwood <rharwood@redhat.com>
+Date: Mon, 28 Mar 2016 22:07:08 -0400
+Subject: [PATCH 3/3] Force overwrite on cred_store tests
+
+Certain versions of krb5 (>= 1.14 or anything that backported the
+patch, including RHEL/Centos/Fedora) object (probably rightly so) to
+duplicate credentials already existing in the ccache.  Tell those
+versions to sit down and shut up.
+
+This is the third and final commit in a series to enable running our
+test suite on RHEL-7.
+---
+ gssapi/tests/test_high_level.py | 3 ++-
+ gssapi/tests/test_raw.py        | 2 +-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/gssapi/tests/test_high_level.py b/gssapi/tests/test_high_level.py
+index 404ed43..3a9b8a3 100644
+--- a/gssapi/tests/test_high_level.py
++++ b/gssapi/tests/test_high_level.py
+@@ -174,7 +174,8 @@ class CredsTestCase(_GSSAPIKerberosTestCase):
+         deleg_creds = server_ctx.delegated_creds
+         deleg_creds.shouldnt_be_none()
+ 
+-        store_res = deleg_creds.store(usage='initiate', set_default=True)
++        store_res = deleg_creds.store(usage='initiate', set_default=True,
++                                      overwrite=True)
+         store_res.usage.should_be('initiate')
+         store_res.mechs.should_include(gb.MechType.kerberos)
+ 
+diff --git a/gssapi/tests/test_raw.py b/gssapi/tests/test_raw.py
+index 23f2e2c..beebfb3 100644
+--- a/gssapi/tests/test_raw.py
++++ b/gssapi/tests/test_raw.py
+@@ -474,7 +474,7 @@ class TestBaseUtilities(_GSSAPIKerberosTestCase):
+         deleg_creds = server_ctx_resp.delegated_creds
+         deleg_creds.shouldnt_be_none()
+         store_res = gb.store_cred(deleg_creds, usage='initiate',
+-                                  set_default=True)
++                                  set_default=True, overwrite=True)
+ 
+         store_res.shouldnt_be_none()
+         store_res.usage.should_be('initiate')
+-- 
+1.8.3.1
+

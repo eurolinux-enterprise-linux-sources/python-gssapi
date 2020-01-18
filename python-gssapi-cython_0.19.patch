@@ -1,0 +1,88 @@
+From 3b9a02481ff0f98ec9ee40d06d71d2a25d7d0bf3 Mon Sep 17 00:00:00 2001
+From: Robbie Harwood <rharwood@redhat.com>
+Date: Thu, 24 Mar 2016 14:46:02 -0400
+Subject: [PATCH 2/3] Work around bug in Cython 0.19 in test suite
+
+Pre-0.21 Cython seems to incorrectly represent integral types as too
+large.  However, for our purposes, it is acceptable for them to be
+larger than their declared type, as long as they are integral.
+---
+ gssapi/tests/test_raw.py | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/gssapi/tests/test_raw.py b/gssapi/tests/test_raw.py
+index 37f6372..23f2e2c 100644
+--- a/gssapi/tests/test_raw.py
++++ b/gssapi/tests/test_raw.py
+@@ -394,8 +394,8 @@ class TestBaseUtilities(_GSSAPIKerberosTestCase):
+         actual_mechs.shouldnt_be_empty()
+         actual_mechs.should_include(gb.MechType.kerberos)
+ 
+-        output_init_ttl.should_be_a(int)
+-        output_accept_ttl.should_be_a(int)
++        output_init_ttl.should_be_an_integer()
++        output_accept_ttl.should_be_an_integer()
+ 
+         new_creds.should_be_a(gb.Creds)
+ 
+@@ -426,7 +426,7 @@ class TestBaseUtilities(_GSSAPIKerberosTestCase):
+         actual_mechs.shouldnt_be_empty()
+         actual_mechs.should_include(gb.MechType.kerberos)
+ 
+-        output_ttl.should_be_a(int)
++        output_ttl.should_be_an_integer()
+         # no need to explicitly release any more -- we can just rely on
+         # __dealloc__ (b/c cython)
+ 
+@@ -541,8 +541,8 @@ class TestBaseUtilities(_GSSAPIKerberosTestCase):
+         actual_mechs.shouldnt_be_empty()
+         actual_mechs.should_include(gb.MechType.kerberos)
+ 
+-        output_init_ttl.should_be_a(int)
+-        output_accept_ttl.should_be_a(int)
++        output_init_ttl.should_be_an_integer()
++        output_accept_ttl.should_be_an_integer()
+ 
+         new_creds.should_be_a(gb.Creds)
+ 
+@@ -618,7 +618,7 @@ class TestBaseUtilities(_GSSAPIKerberosTestCase):
+         actual_mechs.shouldnt_be_empty()
+         actual_mechs.should_include(gb.MechType.kerberos)
+ 
+-        output_ttl.should_be_a(int)
++        output_ttl.should_be_an_integer()
+ 
+     @_extension_test('password_add', 'Password (add)')
+     def test_add_cred_with_password(self):
+@@ -638,8 +638,8 @@ class TestBaseUtilities(_GSSAPIKerberosTestCase):
+         actual_mechs.shouldnt_be_empty()
+         actual_mechs.should_include(gb.MechType.kerberos)
+ 
+-        output_init_ttl.should_be_a(int)
+-        output_accept_ttl.should_be_a(int)
++        output_init_ttl.should_be_an_integer()
++        output_accept_ttl.should_be_an_integer()
+ 
+         new_creds.should_be_a(gb.Creds)
+ 
+@@ -1079,7 +1079,7 @@ class TestWrapUnwrap(_GSSAPIKerberosTestCase):
+         conf.should_be_a(bool)
+         conf.should_be_true()
+ 
+-        qop.should_be_a(int)
++        qop.should_be_an_integer()
+ 
+         init_message[1].value.should_be(init_signed_info)
+         init_message[2].value.should_be(init_data)
+@@ -1111,7 +1111,7 @@ class TestWrapUnwrap(_GSSAPIKerberosTestCase):
+         conf.should_be_a(bool)
+         conf.should_be_true()
+ 
+-        qop.should_be_a(int)
++        qop.should_be_an_integer()
+ 
+         init_message[1].value.should_be(init_signed_info)
+         init_message[2].value.should_be(init_data)
+-- 
+1.8.3.1
+
