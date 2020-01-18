@@ -6,7 +6,7 @@
 
 Name:           python-gssapi
 Version:        1.2.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python Bindings for GSSAPI (RFC 2743/2744 and extensions)
 
 License:        ISC
@@ -16,6 +16,7 @@ Source0:        https://github.com/pythongssapi/%{name}/releases/download/v%{ver
 Patch0: k5test-0.9.1-usr_lib64.patch
 Patch1: python-gssapi-cython_0.19.patch
 Patch2: python-gssapi-1.2.1-overwrite_cred_store.patch
+Patch3: python-gssapi-display_status-infinite-recursion.patch
 
 BuildRequires:  python2-devel
 BuildRequires:  krb5-devel >= 1.10
@@ -76,6 +77,7 @@ RFC 2743, as well as multiple extensions.
 %patch0 -p1 -b .usr_lib64
 %patch1 -p1 -b .cython_0.19
 %patch2 -p1 -b .overwrite_cred_store
+%patch3 -p1 -b .display_status-infinite-recursion
 
 %if 0%{?with_python3}
 rm -rf %{py3dir}
@@ -139,6 +141,10 @@ popd
 
 
 %changelog
+* Tue Apr 11 2017 Robbie Harwood <rharwood@redhat.com> - 1.2.0-3
+- Fix an infinite loop from gss_display_status
+- Resolves: #1438390
+
 * Mon Apr 04 2016 Robbie Harwood <rharwood@redhat.com> - 1.2.0-2
 - Move python-tox from build requirement to test requirement
 - Resolves: #1292139
